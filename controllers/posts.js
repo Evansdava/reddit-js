@@ -3,24 +3,27 @@ const Post = require('../models/post')
 module.exports = (app) => {
   // CREATE
   app.post('/posts/new', (req, res) => {
-    // INSTANTIATE INSTANCE OF POST MODEL
-    const post = new Post(req.body)
+    if (req.user) {
+      var post = new Post(req.body)
 
-    // SAVE INSTANCE OF POST MODEL TO DB
-    post.save((err, post) => {
-      if (err) {
-        console.log(err.stack)
-      }
-      // REDIRECT TO THE ROOT
-      return res.redirect('/')
-    })
+      post.save(function (err, post) {
+        if (err) {
+          console.log(err)
+        }
+        return res.redirect('/')
+      })
+    } else {
+      return res.status(401) // UNAUTHORIZED
+    }
   })
 
   // INDEX
   app.get('/', (req, res) => {
-    Post.find({}).lean()
+    var currentUser = req.user
+
+    Post.find({})
       .then(posts => {
-        res.render('posts-index', { posts })
+        res.render('posts-index', { posts, currentUser })
       })
       .catch(err => {
         console.log(err.message)
@@ -31,7 +34,7 @@ module.exports = (app) => {
   app.get('/posts/:id', function (req, res) {
     // LOOK UP THE POST
     Post.findById(req.params.id).lean().populate('comments').then((post) => {
-      res.render('posts-show', { post })
+      res.render('posts-show', { post, currentUser: req.user })
     }).catch((err) => {
       console.log(err.message)
     })
@@ -41,7 +44,7 @@ module.exports = (app) => {
   app.get('/n/:subreddit', function (req, res) {
     Post.find({ subreddit: req.params.subreddit }).lean()
       .then(posts => {
-        res.render('posts-index', { posts })
+        res.render('posts-index', { posts, currentUser: req.user })
       })
       .catch(err => {
         console.log(err)
