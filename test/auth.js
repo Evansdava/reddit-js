@@ -42,6 +42,33 @@ describe('User', function () {
     })
   })
 
+  // login
+  it('should be able to login', function (done) {
+    agent
+      .post('/login')
+      .send({ username: 'testone', password: 'password' })
+      .end(function (err, res) {
+        if (err) {
+          console.log(err)
+        }
+        res.should.have.status(200)
+        agent.should.have.cookie('nToken')
+        done()
+      })
+  })
+
+  // logout
+  it('should be able to logout', function (done) {
+    agent.get('/logout').end(function (err, res) {
+      if (err) {
+        console.log(err)
+      }
+      res.should.have.status(200)
+      agent.should.not.have.cookie('nToken')
+      done()
+    })
+  })
+
   after(function () {
     agent.close()
   })
