@@ -43,11 +43,10 @@ app.set('view engine', 'handlebars')
 
 app.get('/posts/new', (req, res) => res.render('posts-new', { currentUser: req.user }))
 
-require('./controllers/posts.js')(app)
-
+require('./controllers/posts')(app)
 require('./controllers/comments.js')(app)
-
 require('./controllers/auth.js')(app)
+require('./controllers/replies.js')(app)
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
