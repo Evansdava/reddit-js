@@ -35,7 +35,7 @@ module.exports = (app) => {
     var currentUser = req.user
     // res.render('home', {})
     console.log(req.cookies)
-    Post.find().populate('author')
+    Post.find().lean().populate('author')
       .then(posts => {
         res.render('posts-index', { posts, currentUser })
         // res.render('home', {})
@@ -70,7 +70,7 @@ module.exports = (app) => {
 
   // Upvote
   app.put('/posts/:id/vote-up', function (req, res) {
-    Post.findById(req.params.id).exec(function (err, post) {
+    Post.findById(req.params.id).lean().exec(function (err, post) {
       if (err) {
         console.log(err)
       }
@@ -83,7 +83,7 @@ module.exports = (app) => {
 
   // Downvote
   app.put('/posts/:id/vote-down', function (req, res) {
-    Post.findById(req.params.id).exec(function (err, post) {
+    Post.findById(req.params.id).lean().exec(function (err, post) {
       if (err) {
         console.log(err)
       }
